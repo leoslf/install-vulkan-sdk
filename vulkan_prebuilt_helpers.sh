@@ -54,6 +54,7 @@ function download_vulkan_installer() {
       mv -v "${filename}.tmp" "${filename}"
     fi
     ls -lh "$filename" >&2
+  fi
 }
 
 function unpack_vulkan_installer() {

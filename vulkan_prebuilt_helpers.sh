@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # helper functions for downloading/installing platform-specific Vulkan SDKs
 # originally meant for use from GitHub Actions
 #   see: https://github.com/humbletim/install-vulkan-sdk

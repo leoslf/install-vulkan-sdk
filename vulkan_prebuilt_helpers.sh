@@ -10,11 +10,22 @@
 
 function _os_filename() {
   case $1 in
-    mac) echo vulkan_sdk.dmg ;;
-    linux) echo vulkan_sdk.tar.gz ;;
-    linux-arm) echo vulkansdk-linux-arm64-$RUNNER_OS-$VULKAN_SDK_VERSION.zip ;;
-    windows) echo vulkan_sdk.exe ;;
-    *) echo "unknown $1" >&2 ; exit 9 ;;
+    mac)
+      echo vulkan_sdk.dmg
+      ;;
+    linux)
+      echo vulkan_sdk.tar.gz
+      ;;
+    linux-arm)
+      echo vulkansdk-linux-arm64-$RUNNER_OS-$VULKAN_SDK_VERSION.zip
+      ;;
+    windows)
+      echo vulkan_sdk.exe
+      ;;
+    *)
+      echo "unknown $1" >&2
+      exit 9
+       ;;
   esac
 }
 
@@ -24,7 +35,7 @@ function download_vulkan_installer() {
     os="linux-arm"
     echo "Downloading ARM artifact for version $VULKAN_SDK_VERSION"
     gh run download --pattern "vulkansdk-linux-arm64-$RUNNER_OS-$VULKAN_SDK_VERSION.zip"
-    unzip vulkansdk-linux-arm64-$RUNNER_OS-$VULKAN_SDK_VERSION.zip -d $VULKAN_SDK
+    unzip "vulkansdk-linux-arm64-$RUNNER_OS-$VULKAN_SDK_VERSION.zip" -d "$VULKAN_SDK"
   else
     local filename=$(_os_filename $os)
     local url=https://sdk.lunarg.com/sdk/download/$VULKAN_SDK_VERSION/$os/$filename?Human=true
@@ -32,11 +43,15 @@ function download_vulkan_installer() {
     if [[ -f $filename ]] ; then
       echo "using cached: $filename" >&2
     else
-      curl --fail-with-body -s -L -o ${filename}.tmp $url || { echo "curl failed with error code: $?" >&2 ; curl -s -L --head $url >&2 ; exit 32 ; }
-      test -f ${filename}.tmp
-      mv -v ${filename}.tmp ${filename}
+      curl --fail-with-body -s -L -o "${filename}.tmp" "$url" || {
+        echo "curl failed with error code: $?" >&2
+        curl -s -L --head $url >&2
+        exit 32
+      }
+      test -f "${filename}.tmp"
+      mv -v "${filename}.tmp" "${filename}"
     fi
-    ls -lh $filename >&2
+    ls -lh "$filename" >&2
 }
 
 function unpack_vulkan_installer() {
